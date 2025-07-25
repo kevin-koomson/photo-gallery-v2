@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress Test Control Panel - MVC App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Roboto, Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .stress-test-container {
+            padding: 2rem 0;
+            min-height: 100vh;
+        }
+        .panel-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .page-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .page-subtitle {
+            color: #7f8c8d;
+            margin-bottom: 0;
+        }
+        .section-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .form-control, .form-range, select {
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            padding: 1rem;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        .form-control:focus, .form-range:focus, select:focus {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+        }
+        .btn {
+            font-family: inherit;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-danger:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        .btn-warning:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
+            color: white;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .status-badge {
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .status-idle {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-running {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-locked {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .cpu-percentage-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e74c3c;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .range-slider {
+            width: 100%;
+            margin: 1rem 0;
+        }
+        .range-slider input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        .range-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e74c3c;
+            cursor: pointer;
+        }
+        .range-slider input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e74c3c;
+            cursor: pointer;
+            border: none;
+        }
+        .alert {
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+        .alert-info {
+            background: rgba(23, 162, 184, 0.1);
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.1);
+            color: #721c24;
+            border: 1px solid #f8d7da;
+        }
+        .system-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #dee2e6;
+        }
+        .system-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .system-info-item:last-child {
+            margin-bottom: 0;
+        }
+        .system-info-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .system-info-value {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .button-group .btn {
+            flex: 1;
+        }
+        .back-button {
+            top: 2rem;
+            left: 2rem;
+        }
+        @media (max-width: 768px) {
+            .back-button {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-bottom: 1rem;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+        }
+        @media (max-width: 576px) {
+            .range-slider + .d-flex {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container stress-test-container">
+    <div class="back-button">
+        <a href="/dashboard" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back to Dashboard
+        </a>
+    </div>
+
+    <div class="stress-test-header panel-box">
+        <h1 class="page-title">
+            <i class="fas fa-tachometer-alt me-2" style="color: #e74c3c;"></i>
+            Stress Test Control Panel
+        </h1>
+        <p class="page-subtitle">Monitor and control CPU stress testing across multiple instances</p>
+    </div>
+
+    <!-- Status Panel -->
+    <div class="status-panel panel-box">
+        <h3 class="section-title">
+            <i class="fas fa-info-circle"></i>
+            Current Status
+        </h3>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="system-info">
+                    <div class="system-info-item">
+                        <span class="system-info-label">System Status:</span>
+                        <span class="system-info-value" th:text="${systemStatus ?: 'IDLE'}">IDLE</span>
+                    </div>
+                    <div class="system-info-item">
+                        <span class="system-info-label">Instance ID:</span>
+                        <span class="system-info-value" th:text="${instanceId ?: 'N/A'}">instance-001</span>
+                    </div>
+                    <div class="system-info-item">
+                        <span class="system-info-label">Available CPU Cores:</span>
+                        <span class="system-info-value" th:text="${availableCores ?: 'N/A'}">4</span>
+                    </div>
+                    <div class="system-info-item">
+                        <span class="system-info-label">Current CPU Usage:</span>
+                        <span class="system-info-value" th:text="${currentCpuUsage ?: 'N/A'}">15%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <div th:if="${stressTestStatus == 'IDLE'}" class="status-badge status-idle">
+                    <i class="fas fa-check-circle"></i>
+                    System Ready
+                </div>
+                <div th:if="${stressTestStatus == 'RUNNING'}" class="status-badge status-running">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Stress Test Active
+                </div>
+                <div th:if="${stressTestStatus == 'LOCKED'}" class="status-badge status-locked">
+                    <i class="fas fa-lock"></i>
+                    Locked by Another Instance
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div th:if="${message}" class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <span th:text="${message}"></span>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <div th:if="${stressTestStatus == 'LOCKED'}" class="alert alert-warning">
+            <i class="fas fa-lock me-2"></i>
+            <strong>Multi-Instance Lock Active:</strong> Another instance is currently running a stress test.
+            You can monitor the status here and stop the test from any instance.
+        </div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="control-panel panel-box">
+        <h3 class="section-title">
+            <i class="fas fa-sliders-h"></i>
+            Stress Test Controls
+        </h3>
+
+        <form th:action="@{/stress-test/start}" method="post">
+            <div class="row">
+                <div class="col-md-8">
+                    <label for="cpuPercentage" class="form-label">
+                        <strong>CPU Usage Target:</strong>
+                    </label>
+                    <div class="range-slider">
+                        <input type="range"
+                               id="cpuPercentage"
+                               name="cpuPercentage"
+                               min="10"
+                               max="95"
+                               value="50"
+                               class="form-range"
+                               onchange="updateCpuDisplay(this.value)"
+                               th:disabled="${stressTestStatus == 'LOCKED'}">
+                    </div>
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>10%</span>
+                        <span>50%</span>
+                        <span>95%</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <label class="form-label"><strong>Selected:</strong></label>
+                    <div class="cpu-percentage-display" id="cpuDisplay">50%</div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="duration" class="form-label">
+                        <strong>Duration (minutes):</strong>
+                    </label>
+                    <input type="number"
+                           class="form-control"
+                           id="duration"
+                           name="duration"
+                           min="1"
+                           max="60"
+                           value="5"
+                           th:disabled="${stressTestStatus == 'LOCKED'}">
+                </div>
+                <div class="col-md-6">
+                    <label for="testType" class="form-label">
+                        <strong>Test Type:</strong>
+                    </label>
+                    <select class="form-control"
+                            id="testType"
+                            name="testType"
+                            th:disabled="${stressTestStatus == 'LOCKED'}">
+                        <option value="CPU_INTENSIVE">CPU Intensive</option>
+                        <option value="MIXED_LOAD">Mixed Load</option>
+                        <option value="BURST_PATTERN">Burst Pattern</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit"
+                        class="btn btn-danger"
+                        th:disabled="${stressTestStatus == 'RUNNING' || stressTestStatus == 'LOCKED'}">
+                    <i class="fas fa-play me-2"></i>
+                    Start Stress Test
+                </button>
+
+                <button type="button"
+                        class="btn btn-warning"
+                        th:disabled="${stressTestStatus == 'IDLE'}"
+                        onclick="stopStressTest()">
+                    <i class="fas fa-stop me-2"></i>
+                    Stop Stress Test
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-3">
+            <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                <strong>Note:</strong> In a multi-instance environment, only one instance can run a stress test at a time.
+                The stop command can be executed from any instance.
+            </small>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    function updateCpuDisplay(value) {
+        document.getElementById('cpuDisplay').textContent = value + '%';
+    }
+
+    function stopStressTest() {
+        if (confirm('Are you sure you want to stop the stress test?')) {
+            fetch('/stress-test/stop', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error stopping stress test: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error stopping stress test. Please try again.');
+                });
+        }
+    }
+
+    // Auto-refresh status every 5 seconds
+    setInterval(function() {
+        fetch('/stress-test/status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.needsRefresh) {
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Status check error:', error));
+    }, 5000);
+</script>
+</body>
+</html>

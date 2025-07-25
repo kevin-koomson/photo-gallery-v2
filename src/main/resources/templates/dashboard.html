@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MVC App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard-container {
+            padding: 2rem 0;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .welcome-text {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .stress-test {
+            color: #e74c3c;
+        }
+
+        .photo-gallery {
+            color: #3498db;
+        }
+
+        .name-change {
+            color: #2ecc71;
+        }
+
+        .feature-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-status {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container dashboard-container">
+    <div class="dashboard-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="welcome-text">
+                    <i class="fas fa-hand-wave me-2" style="color: #f39c12;"></i>
+                    Welcome back, <span th:text="${userName}">User</span>!
+                </h1>
+                <p class="subtitle">Choose from the available features below</p>
+            </div>
+            <a href="/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt me-2"></i>
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="features-grid">
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert"
+             style="grid-column: 1 / -1; background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; border-radius: 15px;">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <a href="/stress-test" class="feature-card" style="text-decoration: none; color: inherit;">
+            <div class="feature-card" role="button" tabindex="0">
+                <div class="text-center">
+                    <i class="fas fa-tachometer-alt feature-icon stress-test"></i>
+                    <h3 class="feature-title">Stress Test Control Panel</h3>
+                    <p class="feature-description">Monitor and control system stress tests with real-time metrics and
+                        performance analysis.</p>
+                    <div class="feature-status" style="background: #d4edda; border-color: #c3e6cb; color: #155724;">
+                        <i class="fas fa-check me-1"></i>
+                        Available
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <a href="/gallery" class="feature-card" style="text-decoration: none; color: inherit;">
+            <div class="feature-card" role="button" tabindex="0">
+                <div class="text-center">
+                    <i class="fas fa-images feature-icon photo-gallery"></i>
+                    <h3 class="feature-title">Photo Gallery</h3>
+                    <p class="feature-description">Browse, upload, and manage your photo collection with an intuitive
+                        gallery interface!</p>
+                    <div class="feature-status" style="background: #d4edda; border-color: #c3e6cb; color: #155724;">
+                        <i class="fas fa-check me-1"></i>
+                        Available
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <a href="/name-change" class="feature-card" style="text-decoration: none; color: inherit;">
+            <div class="text-center">
+                <i class="fas fa-user-edit feature-icon name-change"></i>
+                <h3 class="feature-title">Name Change</h3>
+                <p class="feature-description">Update your display name and personalize your profile settings.</p>
+                <div class="feature-status" style="background: #d4edda; border-color: #c3e6cb; color: #155724;">
+                    <i class="fas fa-check me-1"></i>
+                    Available
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
