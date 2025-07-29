@@ -1,0 +1,30 @@
+{
+  "family": "springboot-task",
+  "executionRoleArn": "arn:aws:iam::839071825379:role/week5-gallery-app-stack-ECSExecutionRole-6B7dOnaqncyW",
+  "taskRoleArn": "arn:aws:iam::839071825379:role/week5-gallery-app-stack-ECSExecutionRole-6B7dOnaqncyW",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "containerDefinitions": [
+    {
+      "name": "springboot-container",
+      "image": "<IMAGE_URI>",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/springboot",
+          "awslogs-region": "eu-central-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
