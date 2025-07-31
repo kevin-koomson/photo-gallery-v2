@@ -39,7 +39,7 @@ public class GalleryController {
         try {
             // Get paginated images
             PaginatedImages paginatedImages = s3Service.listImagesPaginatedFromDb(page, size);
-            List<String> list = s3Service.listFiles();
+//            List<String> list = s3Service.listFiles();
 
             model.addAttribute("images", paginatedImages.getImages());
             model.addAttribute("totalImages", paginatedImages.getTotalImages());
